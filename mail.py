@@ -64,7 +64,7 @@ def main():
         imap.login(username, password)
         imap.select("INBOX")
 
-        sub_status, messages = imap.search(None, '(UNSEEN FROM {})'.format(source))
+        sub_status, messages = imap.search(None, '(SEEN FROM {})'.format(source))
         lines = []
         if sub_status == 'OK':
             for message in messages[0].split():
@@ -84,14 +84,12 @@ def main():
                                     payload = part.get_payload(decode=True)
                                     if payload is not None:
                                         text = payload.decode('utf-8').replace('\r', '').replace('\n', ' ')
-                                        date = re.search('=================(.*)======================================', text).group(1).strip()
-                                        name = re.search('Name:(.*)Ph#:', text).group(1).strip()
-                                        phone = re.search('Ph#:(.*)DOB:', text).group(1).strip()
-                                        birthday = re.search('DOB:(.*)Which office were you seen at', text).group(1).strip()
-                                        office = re.search('Which office were you seen at(.*)Msg:', text).group(1)[2:].strip()
-                                        note = re.search('Msg(.*)CID:', text).group(1)[1:].strip()
-                                        cid = re.search('CID:(.*)--------------------------------------', text).group(1).strip()
-                                        line = [date, name, phone, birthday, office, note, cid]
+                                        date = re.search('Time:(.*)From:', text).group(1).strip()
+                                        name = re.search('Time:(.*)Duration:', text).group(1).replace('From:', '').replace(date, '').strip()
+                                        duration = re.search('Duration:(.*)Transcript:', text).group(1).strip()
+                                        transcript = re.search('Transcript:(.*)Voicemail box:', text).group(1).strip()
+                                        voicemailBox = re.search('Voicemail box:(.*)Sincerely', text).group(1).strip()
+                                        line = [date, name, duration, transcript, voicemailBox]
                                         print(line)
                                         lines.append(line)
                                         break
@@ -99,15 +97,12 @@ def main():
                                 payload = msg.get_payload(decode=True)
                                 if payload is not None:
                                     text = payload.decode('utf-8').replace('\r', '').replace('\n', ' ')
-                                    date = re.search('=================(.*)======================================',
-                                                     text).group(1).strip()
-                                    name = re.search('Name:(.*)Ph#:', text).group(1).strip()
-                                    phone = re.search('Ph#:(.*)DOB:', text).group(1).strip()
-                                    birthday = re.search('DOB:(.*)Which office were you seen at', text).group(1).strip()
-                                    office = re.search('Which office were you seen at(.*)Msg:', text).group(1)[2:].strip()
-                                    note = re.search('Msg(.*)CID:', text).group(1)[1:].strip()
-                                    cid = re.search('CID:(.*)--------------------------------------', text).group(1).strip()
-                                    line = [date, name, phone, birthday, office, note, cid]
+                                    date = re.search('Time:(.*)From:', text).group(1).strip()
+                                    name = re.search('Time:(.*)Duration:', text).group(1).replace('From:', '').replace(date, '').strip()
+                                    duration = re.search('Duration:(.*)Transcript:', text).group(1).strip()
+                                    transcript = re.search('Transcript:(.*)Voicemail box:', text).group(1).strip()
+                                    voicemailBox = re.search('Voicemail box:(.*)Sincerely', text).group(1).strip()
+                                    line = [date, name, duration, transcript, voicemailBox]
                                     print(line)
                                     lines.append(line)
                     except:
